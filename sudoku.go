@@ -127,7 +127,7 @@ func (puzz *puzzle) init(in io.Reader) error {
 	return nil
 }
 
-// count returns the element's potential value
+// potentialValue returns the element's potential value
 // if all else are eliminated
 func (e *element) potentialValue() (value int, ok bool) {
 	var count int
