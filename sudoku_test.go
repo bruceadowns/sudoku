@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"flag"
-	"io"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -332,7 +331,7 @@ _ 4 _ _ 7 8 _ 1 _
 _ 1 2 _ 4 5 _ 7 8
 1 2 3 4 5 6 7 8 9
 `,
-		// missing last line feed
+		// extra line feed
 		`1 _ 3 _ _ 6 _ 8 _
 _ 5 _ _ 8 _ 1 2 _
 7 _ 9 1 _ 3 _ 5 6
@@ -341,7 +340,9 @@ _ 3 _ _ 6 7 _ 9 _
 8 _ 1 _ 3 _ 5 _ 7
 _ 4 _ _ 7 8 _ 1 _
 6 _ 8 _ _ 2 _ 4 _
-_ 1 2 _ 4 5 _ 7 8`,
+_ 1 2 _ 4 5 _ 7 8
+
+`,
 		// empty line
 		``}
 
@@ -481,23 +482,16 @@ func testAllPuzzles(t testing.TB) {
 	}
 	defer file.Close()
 
-	reader := bufio.NewReader(file)
+	scanner := bufio.NewScanner(file)
 
 	var total, longest time.Duration
 	var count int
 
 OUTER_LOOP:
-	for {
-		line, err := reader.ReadString('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			t.Error(err)
-			break
-		}
-		if len(line) != 81+1 {
-			t.Log("line length not 81")
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) != 81 {
+			t.Logf("line length not 81 [%s]", line)
 			continue
 		}
 
