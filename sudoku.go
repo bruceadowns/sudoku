@@ -95,17 +95,9 @@ type puzzle [size][size]element
 func (puzz *puzzle) init(in io.Reader) error {
 	// read all lines from reader
 	var lines []string
-	reader := bufio.NewReader(in)
-	for {
-		line, err := reader.ReadString('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			return err
-		}
-
-		lines = append(lines, line)
+	scanner := bufio.NewScanner(in)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
 	}
 	if len(lines) != size {
 		return fmt.Errorf("expect %d lines - actual %d", size, len(lines))

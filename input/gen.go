@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"os"
 )
@@ -16,20 +15,14 @@ func main() {
 	dry := flag.Bool("dry", false, "dry run on writing output")
 	flag.Parse()
 
-	reader := bufio.NewReader(os.Stdin)
+	scanner := bufio.NewScanner(os.Stdin)
 	var idx uint = 1
 
 OUTER_LOOP:
-	for {
-		line, err := reader.ReadString('\n')
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			log.Fatal(err)
-		}
-		if len(line) != 81+1 {
-			log.Printf("line length not 81")
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) != 81 {
+			log.Printf("line length not 81 [%s]", line)
 			continue
 		}
 
@@ -48,13 +41,12 @@ OUTER_LOOP:
 				xform.WriteRune('_')
 			case '1', '2', '3', '4', '5', '6', '7', '8', '9':
 				xform.WriteRune(v)
-			case '\n':
-				// no-op
 			default:
 				log.Printf("invalid field value [%s]", string(v))
 				continue OUTER_LOOP
 			}
 		}
+		xform.WriteRune('\n')
 
 		filename := fmt.Sprintf("%s%d.txt", *prefix, idx)
 		if *dry {
