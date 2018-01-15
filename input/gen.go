@@ -10,9 +10,12 @@ import (
 )
 
 func main() {
-	limit := flag.Uint("limit", 10, "limit number of files (unlimited 0)")
-	prefix := flag.String("prefix", "puzzle", "prefix for file name")
-	dry := flag.Bool("dry", false, "dry run on writing output")
+	var limit uint
+	var prefix string
+	var dry bool
+	flag.UintVar(&limit, "limit", 10, "limit number of files (unlimited 0)")
+	flag.StringVar(&prefix, "prefix", "puzzle", "prefix for file name")
+	flag.BoolVar(&dry, "dry", false, "dry run on writing output")
 	flag.Parse()
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -48,8 +51,8 @@ OUTER_LOOP:
 		}
 		xform.WriteRune('\n')
 
-		filename := fmt.Sprintf("%s%d.txt", *prefix, idx)
-		if *dry {
+		filename := fmt.Sprintf("%s%d.txt", prefix, idx)
+		if dry {
 			log.Printf("did not write puzzle to %s", filename)
 		} else {
 			file, err := os.Create(filename)
@@ -66,7 +69,7 @@ OUTER_LOOP:
 		// increment only upon writing file
 		idx++
 
-		if *limit > 0 && idx > *limit {
+		if limit > 0 && idx > limit {
 			break
 		}
 	}
